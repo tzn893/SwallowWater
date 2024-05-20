@@ -19,6 +19,7 @@ ASwallowWaterActor::ASwallowWaterActor()
 	AverageHeight = 1.0f;
 	MaxHeight = 1.2f;
 	bEnableSimulation = false;
+	OverlappedRadiusScale = 0.5f;
 
 	RenderTarget = CreateDefaultSubobject<UTextureRenderTarget2D>("RT_SwallowWaterDefaultRT");
 	TmpBuffer = CreateDefaultSubobject<UTextureRenderTarget2D>("RT_SwallowWaterDefaultTmpBuffer");
@@ -102,7 +103,7 @@ void ASwallowWaterActor::Tick(float DeltaSeconds)
 		OverlappedMappedU = OverlappedUV.X;
 		OverlappedMappedV = OverlappedUV.Y;
 
-		OverlappedMappedRadius = OverlappedActorRadius / (PlaneScale * 2 * UnitCast);
+		OverlappedMappedRadius = OverlappedActorRadius / (PlaneScale * 2 * UnitCast) * OverlappedRadiusScale;
 	}
 
 
@@ -111,8 +112,8 @@ void ASwallowWaterActor::Tick(float DeltaSeconds)
 		if (bImpressTriggered)
 		{
 			DynamicSwallowWaterMaterialInstance->SetScalarParameterValue("ImpressRadius", OverlappedMappedRadius);
-			DynamicSwallowWaterMaterialInstance->SetScalarParameterValue("ImpressU", 0.5);
-			DynamicSwallowWaterMaterialInstance->SetScalarParameterValue("ImpressV", 0.5);
+			DynamicSwallowWaterMaterialInstance->SetScalarParameterValue("ImpressU", OverlappedMappedU);
+			DynamicSwallowWaterMaterialInstance->SetScalarParameterValue("ImpressV", OverlappedMappedV);
 		}
 		else
 		{

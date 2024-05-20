@@ -71,7 +71,12 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Render")
 	UStaticMeshComponent*			  StaticPlaneMesh;
 
+	UPROPERTY(EditAnywhere, Category="Simulation")
+	float OverlappedRadiusScale;
+
+	UPROPERTY()
 	UMaterialInstanceDynamic* DynamicCopyMaterialInstance;
+	UPROPERTY()
 	UMaterialInstanceDynamic* DynamicSwallowWaterMaterialInstance;
 
 	AActor* OverlappedActor;
