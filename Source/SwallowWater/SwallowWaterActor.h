@@ -37,6 +37,8 @@ protected:
 	UFUNCTION()
 	void EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
+	bool CheckTextureCompacity();
+
 
 	UPROPERTY(EditAnywhere, Category="Simulation")
 	UTextureRenderTarget2D* RenderTarget;
@@ -81,4 +83,7 @@ protected:
 
 	AActor* OverlappedActor;
 	float	OverlappedActorRadius;
+
+	float RTHeight;
+	float RTWidth;
 };

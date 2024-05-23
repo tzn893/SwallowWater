@@ -52,18 +52,25 @@ void ASwallowWaterActor::BeginPlay()
 	FVector scale = GetActorScale();
 	check(scale.X == scale.Y);
 
-	DestroyDynamicMaterials();
+	RTHeight = RenderTarget->GetSurfaceHeight();
+	RTWidth = RenderTarget->GetSurfaceWidth();
 
+	check(CheckActorComponents());
+
+	DestroyDynamicMaterials();
 
 	DynamicCopyMaterialInstance = UMaterialInstanceDynamic::Create(CopyMaterial, nullptr);
 	DynamicSwallowWaterMaterialInstance = UMaterialInstanceDynamic::Create(SwallowWaterMaterial, nullptr);
 
 	DynamicCopyMaterialInstance->SetTextureParameterValue(FName("SrcTexture"), RenderTarget);
-	DynamicSwallowWaterMaterialInstance->SetTextureParameterValue(FName("RTWater"), TmpBuffer);
+	// DynamicSwallowWaterMaterialInstance->SetTextureParameterValue(FName("RTWater"), TmpBuffer);
 	DynamicSwallowWaterMaterialInstance->SetScalarParameterValue(FName("dt"), dt);
 	DynamicSwallowWaterMaterialInstance->SetScalarParameterValue(FName("dx"), dx);
 	DynamicSwallowWaterMaterialInstance->SetScalarParameterValue(FName("AverageHeight"), AverageHeight);
 	DynamicSwallowWaterMaterialInstance->SetScalarParameterValue(FName("MaxHeight"), MaxHeight);
+
+	DynamicSwallowWaterMaterialInstance->SetScalarParameterValue(FName("RTWidth"), RTWidth);
+	DynamicSwallowWaterMaterialInstance->SetScalarParameterValue(FName("RTHeight"), RTHeight);
 
 	StaticPlaneMesh->OnComponentBeginOverlap.AddDynamic(this, &ASwallowWaterActor::BeginOverlap);
 	StaticPlaneMesh->OnComponentEndOverlap.AddDynamic(this, &ASwallowWaterActor::EndOverlap);
@@ -122,11 +129,27 @@ void ASwallowWaterActor::Tick(float DeltaSeconds)
 			DynamicSwallowWaterMaterialInstance->SetScalarParameterValue("ImpressV", 2);
 		}
 
-		int SubstepCount = (int)FMath::Max((DeltaSeconds * SubstepScale) / dt, 1.0f);
-		for (int i = 0; i < SubstepCount; i++)
+		// int SubstepCount = (int)FMath::Clamp((DeltaSeconds * SubstepScale) / dt, 1.0f, 4.0f);
+		// for (int i = 0; i < SubstepCount; i++)
+		
+		// 4 sub steps
 		{
+			DynamicSwallowWaterMaterialInstance->SetTextureParameterValue(FName("RTWater"), RenderTarget);
+			// UKismetRenderingLibrary::DrawMaterialToRenderTarget(GetWorld(), TmpBuffer, DynamicCopyMaterialInstance);
+			UKismetRenderingLibrary::DrawMaterialToRenderTarget(GetWorld(), TmpBuffer, DynamicSwallowWaterMaterialInstance);
+			
+			DynamicSwallowWaterMaterialInstance->SetTextureParameterValue(FName("RTWater"), TmpBuffer);
+			// UKismetRenderingLibrary::DrawMaterialToRenderTarget(GetWorld(), TmpBuffer, DynamicCopyMaterialInstance);
+			UKismetRenderingLibrary::DrawMaterialToRenderTarget(GetWorld(), RenderTarget, DynamicSwallowWaterMaterialInstance);
+
+			// DynamicSwallowWaterMaterialInstance->SetTextureParameterValue(FName("RTWater"), RenderTarget);
+			UKismetRenderingLibrary::DrawMaterialToRenderTarget(GetWorld(), TmpBuffer, DynamicCopyMaterialInstance);
+			UKismetRenderingLibrary::DrawMaterialToRenderTarget(GetWorld(), TmpBuffer, DynamicSwallowWaterMaterialInstance);
+
+			// DynamicSwallowWaterMaterialInstance->SetTextureParameterValue(FName("RTWater"), TmpBuffer);
 			UKismetRenderingLibrary::DrawMaterialToRenderTarget(GetWorld(), TmpBuffer, DynamicCopyMaterialInstance);
 			UKismetRenderingLibrary::DrawMaterialToRenderTarget(GetWorld(), RenderTarget, DynamicSwallowWaterMaterialInstance);
+
 		}
 	}
 }
@@ -172,5 +195,13 @@ void ASwallowWaterActor::EndOverlap(UPrimitiveComponent* OverlappedComponent, AA
 	{
 		OverlappedActor = nullptr;
 	}
+}
+
+bool ASwallowWaterActor::CheckTextureCompacity()
+{
+	return FMath::Abs(RTHeight - TmpBuffer->GetSurfaceHeight()) < 1e-4 &&
+		FMath::Abs(RTWidth - TmpBuffer->GetSurfaceWidth()) < 1e-4 &&
+		FMath::Abs(RTHeight - RenderTarget->GetSurfaceHeight()) < 1e-4 &&
+		FMath::Abs(RTWidth - RenderTarget->GetSurfaceWidth()) < 1e-4;
 }
 
