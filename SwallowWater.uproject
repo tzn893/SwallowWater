@@ -18,5 +18,10 @@
 			"Name": "RenderDocPlugin",
 			"Enabled": true
 		}
+	],
+	"TargetPlatforms": [
+		"Android",
+		"IOS",
+		"WindowsNoEditor"
 	]
 }

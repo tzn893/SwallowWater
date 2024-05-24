@@ -1,11 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
+#include "SwallowWaterActor.h"
 #include "Kismet/KismetRenderingLibrary.h"
 #include "Components/CapsuleComponent.h"
 
 #include "SwallowWaterCharacter.h"
-#include "SwallowWaterActor.h"
+
 
 // Sets default values
 ASwallowWaterActor::ASwallowWaterActor()
@@ -135,19 +135,17 @@ void ASwallowWaterActor::Tick(float DeltaSeconds)
 		// 4 sub steps
 		{
 			DynamicSwallowWaterMaterialInstance->SetTextureParameterValue(FName("RTWater"), RenderTarget);
-			// UKismetRenderingLibrary::DrawMaterialToRenderTarget(GetWorld(), TmpBuffer, DynamicCopyMaterialInstance);
 			UKismetRenderingLibrary::DrawMaterialToRenderTarget(GetWorld(), TmpBuffer, DynamicSwallowWaterMaterialInstance);
 			
 			DynamicSwallowWaterMaterialInstance->SetTextureParameterValue(FName("RTWater"), TmpBuffer);
-			// UKismetRenderingLibrary::DrawMaterialToRenderTarget(GetWorld(), TmpBuffer, DynamicCopyMaterialInstance);
 			UKismetRenderingLibrary::DrawMaterialToRenderTarget(GetWorld(), RenderTarget, DynamicSwallowWaterMaterialInstance);
 
-			// DynamicSwallowWaterMaterialInstance->SetTextureParameterValue(FName("RTWater"), RenderTarget);
-			UKismetRenderingLibrary::DrawMaterialToRenderTarget(GetWorld(), TmpBuffer, DynamicCopyMaterialInstance);
+			DynamicSwallowWaterMaterialInstance->SetTextureParameterValue(FName("RTWater"), RenderTarget);
+			//UKismetRenderingLibrary::DrawMaterialToRenderTarget(GetWorld(), TmpBuffer, DynamicCopyMaterialInstance);
 			UKismetRenderingLibrary::DrawMaterialToRenderTarget(GetWorld(), TmpBuffer, DynamicSwallowWaterMaterialInstance);
 
-			// DynamicSwallowWaterMaterialInstance->SetTextureParameterValue(FName("RTWater"), TmpBuffer);
-			UKismetRenderingLibrary::DrawMaterialToRenderTarget(GetWorld(), TmpBuffer, DynamicCopyMaterialInstance);
+			DynamicSwallowWaterMaterialInstance->SetTextureParameterValue(FName("RTWater"), TmpBuffer);
+			//UKismetRenderingLibrary::DrawMaterialToRenderTarget(GetWorld(), TmpBuffer, DynamicCopyMaterialInstance);
 			UKismetRenderingLibrary::DrawMaterialToRenderTarget(GetWorld(), RenderTarget, DynamicSwallowWaterMaterialInstance);
 
 		}
